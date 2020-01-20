@@ -100,6 +100,10 @@ def quiz():
     call("sudo lxc-attach --clear-env -n s2 -- bash -c \"echo 'S2'>/quiz_2020/views/index.ejs \"",shell=True)
     call("sudo lxc-attach --clear-env -n s3 -- bash -c \"echo 'S3'>/quiz_2020/views/index.ejs \"",shell=True)
 
+    # Enlace simbolico a los servidores NAS
+    call(" sudo lxc-attach --clear-env -n s1 -- bash -c \"cd /quiz_2020/public; ln -s /mnt/nas uploads; \" ",shell = True)
+    call(" sudo lxc-attach --clear-env -n s2 -- bash -c \"cd /quiz_2020/public; ln -s /mnt/nas uploads; \" ",shell = True)
+    call(" sudo lxc-attach --clear-env -n s3 -- bash -c \"cd /quiz_2020/public; ln -s /mnt/nas uploads; \" ",shell = True)
 
 # Configuracion del balanceador de trafico
 def haproxy():
@@ -112,9 +116,9 @@ def haproxy():
     call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo 'backend webservers'>> /etc/haproxy/haproxy.cfg\"",shell=True)
     call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' mode http'>> /etc/haproxy/haproxy.cfg\"",shell=True)
     call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' balance roundrobin'>> /etc/haproxy/haproxy.cfg\"",shell=True)
-    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s1 20.20.3.11:3000 check weight 30'>> /etc/haproxy/haproxy.cfg\"",shell=True) # Peso 30 10 10 por poner algo
-    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s2 20.20.3.12:3000 check weight 10'>> /etc/haproxy/haproxy.cfg\"",shell=True)
-    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s3 20.20.3.13:3000 check weight 10'>> /etc/haproxy/haproxy.cfg\"",shell=True)
+    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s1 20.20.3.11:3000 check'>> /etc/haproxy/haproxy.cfg\"",shell=True)
+    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s2 20.20.3.12:3000 check'>> /etc/haproxy/haproxy.cfg\"",shell=True)
+    call("sudo lxc-attach --clear-env -n lb -- bash -c \"echo ' server s3 20.20.3.13:3000 backup'>> /etc/haproxy/haproxy.cfg\"",shell=True)
     call("sudo lxc-attach --clear-env -n lb -- sudo service haproxy restart",shell=True)
 
 # __main__
